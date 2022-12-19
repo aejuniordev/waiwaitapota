@@ -12,7 +12,7 @@ import hashlib
 import datetime
 from flask import Flask, request, jsonify, redirect, url_for
 from flask_jwt_extended import JWTManager, create_access_token, jwt_required, get_jwt_identity
-
+import os
 
 app = Flask(__name__)
 
@@ -20,7 +20,7 @@ cors = CORS(app, resources={r"/*": {"origins": "*"}})
 
 app.secret_key = "secret"
 
-app.config["MONGO_URI"] = "mongodb://localhost:27017/waiwaitapota"
+app.config["MONGO_URI"] = "mongodb://mongo:27017/waiwaitapota"
 app.config['SECRET_KEY'] = 'waiwai'
 mongo = PyMongo(app)
 abc = JWTManager(app) # initialize JWTManager
@@ -226,4 +226,5 @@ def not_found(error=None):
     return resposta
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    port = int(os.environ.get('PORT', 5000))
+    app.run(debug=True, host='0.0.0.0', port=port)
