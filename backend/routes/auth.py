@@ -51,7 +51,7 @@ def login():
 @jwt_required(refresh=True)
 def protected():
     identity = get_jwt_identity()
-    return jsonify(foo="bar")
+    return jsonify(msg=f"Olá {identity}")
 
 # https://flask-jwt-extended.readthedocs.io/en/stable/refreshing_tokens/#explicit-refreshing-with-refresh-tokens
 # @auth.route("/refresh", methods=["POST"])
