@@ -3,7 +3,7 @@ from random import choice
 from string import ascii_letters, digits, ascii_uppercase, ascii_lowercase
 
 random = ascii_letters + digits + ascii_uppercase + ascii_lowercase
-secret_key = ''.join(choice(random) for i in range(12))
+secret_key = ''.join(choice(random) for i in range(48))
 config = dict(
     DB_URL=os.environ.get('DB_URL', "mongodb://mongo"),
     DB_PORT=os.environ.get('DB_PORT', 27017),
