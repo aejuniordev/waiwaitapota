@@ -3,10 +3,11 @@
 ## Running container
 ```
 docker compose up \
--d \ # Running daemon
---build # Rebuilding image
+-d \ 
+--build
 ```
-
+`-d`: To running as daemon
+`--build`: Rebuilding image
 ## Down container
 ```
 docker compose down
