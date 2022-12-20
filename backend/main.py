@@ -1,6 +1,7 @@
 from flask import Flask, make_response
 from flask_pymongo import PyMongo
 from bson.json_util import dumps
+from gridfs import GridFS, NoFile
 from bson.objectid import ObjectId
 from flask_cors import CORS
 from flask import jsonify, request
@@ -204,15 +205,15 @@ def profile():
 
 @app.route("/uploads/<path:filename>", methods=["GET"])
 def get_upload(filename):
-    print(mongo.__subclasses__())
-    # print(mongo.send_file(filename))
+    print(GridFS())
+    # print(mongo.send_file(filename, ))
     return {"teste": "aa"}
 
 @app.route("/uploads/<path:filename>", methods=["POST"])
 def save_upload(filename):
     mongo.save_file(filename, request.files["file"])
-    return {"file name": filename}
-    # return redirect(url_for("get_upload", filename=filename))
+    # return {"file name": filename}
+    return redirect(url_for("get_upload", filename=filename))
 
 @app.errorhandler(404)
 def not_found(error=None):
