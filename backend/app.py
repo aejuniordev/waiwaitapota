@@ -3,7 +3,7 @@ import os
 from flask import Flask, request, jsonify
 from flask_cors import CORS  # to avoid cors error in different frontend like react js or any other
 
-from flask_jwt_extended import get_jwt_identity, create_access_token, set_access_cookies, get_jwt, JWTManager
+from flask_jwt_extended import get_jwt_identity, create_access_token, set_access_cookies, get_jwt, JWTManager, create_refresh_token, set_refresh_cookies
 
 from datetime import datetime
 from datetime import timedelta
@@ -32,6 +32,12 @@ app.config["JWT_SECRET_KEY"] = config["SECRET_KEY"]  # Change this!
 app.config["JWT_ACCESS_TOKEN_EXPIRES"] = timedelta(hours=config["ACCESS_TOKEN_EXPIRES"])
 app.config["JWT_REFRESH_TOKEN_EXPIRES"] = timedelta(days=config["REFRESH_TOKEN_EXPIRES"])
 
+# https://stackoverflow.com/questions/62119272/post-requests-not-working-with-token-validation-checks
+app.config["JWT_COOKIE_CSRF_PROTECT"] = True
+app.config["JWT_ACCESS_CSRF_HEADER_NAME"] = "X-CSRF-TOKEN-ACCESS"
+app.config["JWT_REFRESH_CSRF_HEADER_NAME"] = "X-CSRF-TOKEN-REFRESH"
+# app.config['JWT_CSRF_CHECK_FORM'] = True
+
 jwt = JWTManager(app)
 
 # Using an `after_request` callback, we refresh any token that is within 30
@@ -45,12 +51,14 @@ def refresh_expiring_jwts(response):
         target_timestamp = datetime.timestamp(now + timedelta(minutes=30))
         if target_timestamp > exp_timestamp:
             access_token = create_access_token(identity=get_jwt_identity())
+            # refresh_token = create_refresh_token(identity=get_jwt_identity())
+            # response = jsonify(access_token=access_token, refresh_token=refresh_token)
             set_access_cookies(response, access_token)
+            # set_refresh_cookies(response, refresh_token)
         return response
     except (RuntimeError, KeyError):
         # Case where there is not a valid JWT. Just return the original response
         return response
-
 
 @app.route('/', methods=['GET'])
 def hello():
