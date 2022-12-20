@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify, Blueprint
+from flask import request, jsonify, Blueprint
 from models import usuarios  # call model file
 from werkzeug.security import generate_password_hash, check_password_hash
 
@@ -15,7 +15,6 @@ def create_user():
         username = request.json['username']
         email = request.json['email']
         password = request.json['password']
-        # print(username, email, generate_password_hash(password))
         _check = _usuarios.find({ "$or": [ {"username": username }, {"email": email} ] })
         if _check:
             return "", 400
@@ -26,7 +25,6 @@ def create_user():
                 "password":generate_password_hash(password)
             })
             return "", 200
-    # return jsonify(todo.find({})), 200
 
 @auth.route("/login", methods=["POST"])
 def login():
