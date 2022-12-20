@@ -2,13 +2,12 @@ from flask import request, jsonify, Blueprint
 from models import usuarios  # call model file
 from werkzeug.security import generate_password_hash, check_password_hash
 
-from flask_jwt_extended import create_access_token, get_jwt_identity ,jwt_required, create_refresh_token, set_access_cookies, unset_jwt_cookies
+from flask_jwt_extended import create_access_token, get_jwt_identity, jwt_required, create_refresh_token, set_access_cookies, unset_jwt_cookies
 
 auth = Blueprint('auth', __name__)
 
 _usuarios = usuarios.Usuario()
 
-# todo routes
 @auth.route('/register', methods=['POST'])
 def create_user():
     if request.method == "POST":
