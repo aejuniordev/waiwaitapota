@@ -10,12 +10,16 @@ services:
       DB_NAME: waiwaitapota
       DB_USER: 
       DB_PASSWORD:
+      SECRET_KEY: 
+      ACCESS_TOKEN_EXPIRES:
+      REFRESH_TOKEN_EXPIRES:
     ports:
       - 5000:5000
     volumes:
       - ./backend:/home/backend/project
     depends_on:
       - mongo
+    restart: always
   mongo:
     image: mongo:4.4.18
     restart: always

@@ -37,6 +37,8 @@ class Palavra(object):
 
         # Fields required for UPDATE
         self.update_required_fields = [
+            "updated",
+            "created",
             "wordPort",
             "translationWaiwai",]
 
@@ -60,9 +62,14 @@ class Palavra(object):
     def find(self, word, *args):  # find all
         if args:
             category= args[0].get("filters[category]")
+            wordPort= args[0].get("filters[wordPort]")
             if category:
                 word["category"]=category
-        
+            elif wordPort: 
+                # https://www.mongodb.com/docs/manual/reference/operator/query/regex/
+                # https://www.mongodb.com/docs/v4.4/text-search/
+                word["wordPort"]=  { "$regex": wordPort, "$options": 'i'}
+            print(word)
         return self.db.find(word, self.collection_name)
 
     def find_by_id(self, id):

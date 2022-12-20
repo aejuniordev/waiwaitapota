@@ -111,7 +111,7 @@ def visualizarPalavras():
     palavras = mongo.db.palavras.find().sort('word_portugues')
     resp = dumps(palavras)
     return resp
-
+    
 #Rota para adicionar palavras na collection de palavras temporárias
 @app.route('/adicionarPalavrasTemporarias', methods=["POST"])
 def add_palavras_temporarias():
@@ -169,7 +169,6 @@ def register():
 @app.route("/login", methods=["POST"])
 def login4():
     _json = request.json
-
     email = _json['email']
     print(email)
     password = _json['password']

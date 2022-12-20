@@ -9,10 +9,10 @@ _palavras = palavras.Palavra()
 @palavra.route('/<string:_oid>', methods=['GET'])
 def list_palavras(_oid=None):
     args = request.args
-    word_obj = {}
     if _oid:
-        word_obj["_id"] =_oid
-    return _palavras.find(word_obj, args), 200
+        return _palavras.find_by_id(_oid), 200
+    else:
+        return _palavras.find({}, args), 200
 
 @palavra.route('/', methods=['POST'])
 def create_palavra():
@@ -26,7 +26,7 @@ def create_palavra():
         synonymWaiwai = request.json["synonymWaiwai"]
         _check = _palavras.find(word={"wordPort":wordPort})
         if _check:
-            return dict(error="Entrada já existe"), 409
+            return dict(error="Palavra já existe"), 409
         else:
             response = _palavras.create({
                 "wordPort": wordPort, 
@@ -39,23 +39,24 @@ def create_palavra():
             })
             return response, 201
 
-# @palavra.route('/todos/<string:todo_id>/', methods=['GET'])
-# def get_task(todo_id):
-#     return todo.find_by_id(todo_id), 200
+@palavra.route('/<string:_oid>', methods=['PUT'])
+def update_palavra(_oid):
+    if request.method == "PUT":
+        _check = _palavras.find_by_id(_oid)
+        if not _check:
+            return dict(error="ID inexistente"), 404
+        else:
+            del _check['_id']
+            for key in _palavras.fields.keys():
+                if key in request.json:
+                    _check[key] = request.json[key]
+            response = _palavras.update(_oid, _check)
+            print(response)
+            return response, 204 
 
-
-# @usuario.route('/todos/<string:todo_id>/', methods=['PUT'])
-# def update_tasks(todo_id):
-#     if request.method == "PUT":
-#         title = request.form['title']
-#         body = request.form['body']
-#         response = todo.update(todo_id, {'title': title, 'body': body})
-#         return response, 201
-
-
-# @usuario.route('/todos/<string:todo_id>/', methods=['DELETE'])
-# def delete_tasks(todo_id):
-#     if request.method == "DELETE":
-#         todo.delete(todo_id)
-#         return "Record Deleted"
-
+@palavra.route('/<string:_oid>', methods=['DELETE'])
+def delete_palavra(_oid):
+    if request.method == "DELETE":
+         _palavras.delete(_oid)
+         return dict(message="Deleted", _id=_oid), 204
+         
