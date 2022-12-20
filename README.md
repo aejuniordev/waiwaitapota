@@ -2,7 +2,9 @@
 
 ## Running container
 ```
-docker compose up # --build: optional flag
+docker compose up \
+-d \ # Running daemon
+--build # Rebuilding image
 ```
 
 ## Down container
