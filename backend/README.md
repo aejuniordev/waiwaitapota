@@ -12,7 +12,7 @@ source venv/bin/activate
 
 ## Installing libraries
 ```
-pip install -r requirements.txt
+pip install -r requirements.in
 ```
 
 ## Running API
