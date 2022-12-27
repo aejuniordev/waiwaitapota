@@ -7,10 +7,13 @@ gridfs = Database()
 @uploads.route('/', methods=['POST'])
 def create_upload():
     if request.method == "POST":
-        file = request.files["file"]
-        _oid = gridfs.save_file(file.filename, file)
-        return dict(filename=str(_oid) ), 201
-        # return redirect(url_for("uploads.get_upload", filename=str(_oid))), 201
+        oidWord = request.form["oidword"]
+        if oidWord:
+            file = request.files["file"]
+            _oid = gridfs.save_file(file.filename, file, oidword=oidWord)
+            return dict(filename=str(_oid)), 201
+        else:
+            return dict(error="Informe o ID da palavra!"), 400
 
 @uploads.route('/<path:filename>', methods=['GET'])
 def get_upload(filename=None):

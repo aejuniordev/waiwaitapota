@@ -4,7 +4,7 @@ from bson import ObjectId
 from config import config
 
 from gridfs import GridFS, NoFile
-from flask import abort, current_app, request, make_response
+from flask import abort, current_app, request, make_response, jsonify
 from werkzeug.wsgi import wrap_file
 import mimetypes
 from mimetypes import guess_type
@@ -50,7 +50,7 @@ class Database(object):
         found = self.db[collection_name].find_one({"_id": ObjectId(id)})
         
         if found is None:
-            return not found
+            abort(404)
         
         if "_id" in found:
              found["_id"] = str(found["_id"])
@@ -72,7 +72,7 @@ class Database(object):
         return bool(deleted.deleted_count)
 
 
-    def save_file(self, filename, fileobj, base="fs", content_type=None, **kwargs):
+    def save_file(self, filename, fileobj, base="fs", content_type=None, oidword=None, **kwargs):
         if not isinstance(base, str):
             raise TypeError("'base' must be string or unicode")
         if not (hasattr(fileobj, "read") and callable(fileobj.read)):
@@ -81,7 +81,7 @@ class Database(object):
             # https://docs.python.org/pt-br/3/library/mimetypes.html#mimetypes.add_type
             content_type, _ = guess_type(filename)
         storage = GridFS(self.db, base)
-        id = storage.put(fileobj, filename=filename, content_type=content_type, **kwargs)
+        id = storage.put(fileobj, filename=filename, content_type=content_type, wordOid=oidword, **kwargs)
         return id
         
     def send_file(self, filename, base="fs", version=-1, cache_for=31536000):

@@ -1,16 +1,34 @@
 from flask import Flask, request, jsonify, Blueprint
-from models import palavras  # call model file
+from models import palavras, upload # call model file
+
+# todo: refatorar essa parte
+from factory.database import Database
+
+db = Database()
 
 palavra = Blueprint('palavras', __name__)
 
 _palavras = palavras.Palavra()
+_uploads = upload.Upload()
+
 
 @palavra.route('/', methods=['GET'])
 @palavra.route('/<string:_oid>', methods=['GET'])
 def list_palavras(_oid=None):
     args = request.args
     if _oid:
-        return _palavras.find_by_id(_oid), 200
+        attach_image = _uploads.find(_oid, 'image')
+        attach_audio = _uploads.find(_oid, 'audio')
+        _result = _palavras.find_by_id(_oid)
+        _result.update({'audio': None,'image': None})
+        if len(attach_image):
+            _id = attach_image[0]['_id']
+            _result.update({'image': _id})
+        if len(attach_audio):
+            _id = attach_audio[0]['_id']
+            _result.update({'audio': _id})
+
+        return _result, 200
     else:
         return _palavras.find({}, args), 200
 
