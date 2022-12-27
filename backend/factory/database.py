@@ -11,6 +11,8 @@ from mimetypes import guess_type
 
 # Adicionando tipos pendentes de extensões
 mimetypes.add_type('audio/mpeg', '.m4a', strict=True)
+mimetypes.add_type('audio/webm;codecs=opus/json', '.weba', strict=True)
+
 
 class Database(object):
     def __init__(self):

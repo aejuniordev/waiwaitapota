@@ -9,7 +9,8 @@ def create_upload():
     if request.method == "POST":
         file = request.files["file"]
         _oid = gridfs.save_file(file.filename, file)
-        return redirect(url_for("uploads.get_upload", filename=str(_oid))), 201
+        return dict(filename=str(_oid) ), 201
+        # return redirect(url_for("uploads.get_upload", filename=str(_oid))), 201
 
 @uploads.route('/<path:filename>', methods=['GET'])
 def get_upload(filename=None):
