@@ -1,6 +1,6 @@
 from factory.validation import Validator
 from factory.database import Database
-
+from datetime import datetime
 
 class Palavra(object):
     def __init__(self):
@@ -38,7 +38,9 @@ class Palavra(object):
         ]
 
         # Fields required for UPDATE
-        self.update_required_fields = []
+        self.update_required_fields = [
+            "user"
+        ]
 
         # Fields optional for UPDATE
         self.update_optional_fields = [
@@ -80,6 +82,7 @@ class Palavra(object):
         return self.db.find_by_id(id, self.collection_name)
 
     def update(self, id, word):
+        word["updated"] = datetime.now().isoformat()
         self.validator.validate(word, self.fields, self.update_required_fields, self.update_optional_fields)
         return self.db.update(id, word,self.collection_name)
 
