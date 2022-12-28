@@ -84,6 +84,15 @@ class Database(object):
         storage = GridFS(self.db, base)
         id = storage.put(fileobj, filename=filename, content_type=content_type, wordOid=oidword, **kwargs)
         return id
+
+    def delete_file(self, filename, base="fs", content_type=None, oidword=None, **kwargs):
+        if not isinstance(base, str):
+            raise TypeError("'base' must be string or unicode")
+        if content_type is None:
+            # https://docs.python.org/pt-br/3/library/mimetypes.html#mimetypes.add_type
+            content_type, _ = guess_type(filename)
+        storage = GridFS(self.db, base)
+        return storage.delete(ObjectId(filename))
         
     def send_file(self, filename, base="fs", version=-1, cache_for=31536000):
         if not isinstance(base, str):

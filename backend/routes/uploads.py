@@ -15,6 +15,13 @@ def create_upload():
         else:
             return dict(error="Informe o ID da palavra!"), 400
 
+@uploads.route('/<path:filename>', methods=['DELETE'])
+def delete_upload(filename=None):
+    gridfs.find_by_id(filename, "fs.files")
+    gridfs.delete_file(filename)
+    return "", 202
+    
+
 @uploads.route('/<path:filename>', methods=['GET'])
 def get_upload(filename=None):
     if request.method == "GET":

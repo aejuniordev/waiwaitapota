@@ -38,14 +38,14 @@ class Palavra(object):
         ]
 
         # Fields required for UPDATE
-        self.update_required_fields = [
-            "updated",
-            "created",
-            "wordPort",
-            "translationWaiwai",]
+        self.update_required_fields = []
 
         # Fields optional for UPDATE
         self.update_optional_fields = [
+            "updated",
+            "created",
+            "wordPort",
+            "translationWaiwai",
             "category",
             "meaningPort",
             "meaningWaiwai",
