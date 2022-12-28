@@ -1,4 +1,5 @@
 from flask import Flask, request, jsonify, Blueprint
+from flask_jwt_extended import jwt_required, get_jwt_identity
 from models import palavras, upload # call model file
 
 # todo: refatorar essa parte
@@ -27,14 +28,15 @@ def list_palavras(_oid=None):
         if len(attach_audio):
             _id = attach_audio[0]['_id']
             _result.update({'audio': _id})
-
         return _result, 200
     else:
         return _palavras.find({}, args), 200
 
 @palavra.route('/', methods=['POST'])
-def create_palavra():
+@jwt_required()
+def create_palavra():    
     if request.method == "POST":
+        identity = get_jwt_identity()
         wordPort = request.json["wordPort"] 
         translationWaiwai = request.json["translationWaiwai"]
         category = request.json["category"]
@@ -53,7 +55,8 @@ def create_palavra():
                 "meaningPort": meaningPort, 
                 "meaningWaiwai": meaningWaiwai, 
                 "synonymPort": synonymPort, 
-                "synonymWaiwai": synonymWaiwai
+                "synonymWaiwai": synonymWaiwai,
+                "user": identity
             })
             return response, 201
 

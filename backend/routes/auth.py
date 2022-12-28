@@ -1,8 +1,12 @@
+
+
 from flask import request, jsonify, Blueprint
 from models import usuarios  # call model file
 from werkzeug.security import generate_password_hash, check_password_hash
 
-from flask_jwt_extended import create_access_token, get_jwt_identity, jwt_required, create_refresh_token, set_access_cookies, set_refresh_cookies, unset_jwt_cookies
+from flask_jwt_extended import get_jwt, create_access_token, get_jwt_identity, jwt_required, create_refresh_token
+
+
 
 auth = Blueprint('auth', __name__)
 
@@ -23,7 +27,7 @@ def create_user():
                 "email":email,
                 "password":generate_password_hash(password)
             })
-            return "", 201
+            return '', 201
 
 @auth.route("/login", methods=["POST"])
 def login():
@@ -33,12 +37,10 @@ def login():
         _check = _usuarios.find( {"email": email})
         if _check:
             if check_password_hash(_check[0]['password'], password):
-                access_token = create_access_token(identity=_check[0]['username'], fresh=True)
+                additional_claims = {"email": _check[0]['email']}
+                access_token = create_access_token(identity=_check[0]['username'], additional_claims=additional_claims)
                 refresh_token = create_refresh_token(identity=_check[0]['username'])
-                response = jsonify(access_token=access_token, refresh_token=refresh_token)
-                set_access_cookies(response, access_token)
-                set_refresh_cookies(response, refresh_token)
-                return response
+                return jsonify(access_token=access_token, refresh_token=refresh_token)
             else:
                 return jsonify(error="Senha ou email errados"), 400
         else: 
@@ -47,26 +49,15 @@ def login():
         return jsonify(error="Necessário informário email e senha"), 401
     
 
-@auth.route("/protected")
+@auth.route("/refresh", methods=["POST"])
 @jwt_required(refresh=True)
+def refresh():
+    identity = get_jwt_identity()
+    access_token = create_access_token(identity=identity)
+    return jsonify(access_token=access_token)
+
+@auth.route("/hello")
+@jwt_required()
 def protected():
     identity = get_jwt_identity()
     return jsonify(msg=f"Olá {identity}")
-
-# https://flask-jwt-extended.readthedocs.io/en/stable/refreshing_tokens/#explicit-refreshing-with-refresh-tokens
-# @auth.route("/refresh", methods=["POST"])
-# @jwt_required(refresh=True)
-# def refresh():
-#     identity = get_jwt_identity()
-#     access_token = create_access_token(identity=identity)
-#     refresh_token = create_refresh_token(identity=identity)
-#     response = jsonify(access_token=access_token, refresh_token=refresh_token)
-#     set_access_cookies(response, access_token)
-#     set_refresh_cookies(response, refresh_token)
-#     return response
-
-@auth.route("/logout", methods=["POST"])
-def logout():
-    response = jsonify({"msg": "Logout efetuado"})
-    unset_jwt_cookies(response)
-    return response

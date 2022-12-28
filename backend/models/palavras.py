@@ -17,12 +17,14 @@ class Palavra(object):
             "meaningWaiwai": "string",
             "synonymPort": "string",
             "synonymWaiwai": "string",
-            "approved": "boolean"
+            "approved": "boolean",
+            "user": "string"
         }
 
         self.create_required_fields = [
             "wordPort",
             "translationWaiwai",
+            "user"
         ]
 
         # Fields optional for CREATE
@@ -49,7 +51,8 @@ class Palavra(object):
             "meaningWaiwai",
             "synonymPort",
             "synonymWaiwai",
-            "approved"
+            "approved",
+            "identity"
         ]
 
     def create(self, word):

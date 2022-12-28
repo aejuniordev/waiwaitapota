@@ -13,6 +13,9 @@ services:
       SECRET_KEY: 
       ACCESS_TOKEN_EXPIRES:
       REFRESH_TOKEN_EXPIRES:
+      REDIS_HOST:
+      REDIS_DB:
+      REDIS_PORT:
     ports:
       - 5000:5000
     volumes:
@@ -29,6 +32,10 @@ services:
       MONGODB_APPLICATION_DATABASE: 
     ports:
       - 27017:27017
+  redis:
+    image: redis:7.0.7
+    ports:
+      - 6379:6379
   # https://stackoverflow.com/questions/45255066/create-networks-automatically-in-docker-compose
   # https://docs.docker.com/compose/networking/
   # mongo-express:

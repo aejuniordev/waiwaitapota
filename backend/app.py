@@ -3,7 +3,7 @@ import os
 from flask import Flask, request, jsonify
 from flask_cors import CORS  # to avoid cors error in different frontend like react js or any other
 
-from flask_jwt_extended import get_jwt_identity, create_access_token, set_access_cookies, get_jwt, JWTManager, create_refresh_token, set_refresh_cookies
+from flask_jwt_extended import jwt_required,get_jwt, JWTManager
 
 from datetime import datetime
 from datetime import timedelta
@@ -16,6 +16,7 @@ from routes.uploads import uploads
 
 
 from config import config
+import redis
 
 app = Flask(__name__)
 CORS(app, resources={r"/*": {"origins": "*"}})
@@ -24,41 +25,35 @@ CORS(app, resources={r"/*": {"origins": "*"}})
 
 # If true this will only allow the cookies that contain your JWTs to be sent
 # over https. In production, this should always be set to True
-app.config["JWT_COOKIE_SECURE"] = False
-app.config["JWT_TOKEN_LOCATION"] = ["cookies"]
 
 app.config["JWT_SECRET_KEY"] = config["SECRET_KEY"]  # Change this!
-
 app.config["JWT_ACCESS_TOKEN_EXPIRES"] = timedelta(hours=config["ACCESS_TOKEN_EXPIRES"])
 app.config["JWT_REFRESH_TOKEN_EXPIRES"] = timedelta(days=config["REFRESH_TOKEN_EXPIRES"])
 
-# https://stackoverflow.com/questions/62119272/post-requests-not-working-with-token-validation-checks
-app.config["JWT_COOKIE_CSRF_PROTECT"] = True
-app.config["JWT_ACCESS_CSRF_HEADER_NAME"] = "X-CSRF-TOKEN-ACCESS"
-app.config["JWT_REFRESH_CSRF_HEADER_NAME"] = "X-CSRF-TOKEN-REFRESH"
-# app.config['JWT_CSRF_CHECK_FORM'] = True
-
 jwt = JWTManager(app)
 
-# Using an `after_request` callback, we refresh any token that is within 30
-# minutes of expiring. Change the timedeltas to match the needs of your application.
-# https://flask-jwt-extended.readthedocs.io/en/stable/refreshing_tokens/
-@app.after_request
-def refresh_expiring_jwts(response):
-    try:
-        exp_timestamp = get_jwt()["exp"]
-        now = datetime.now(timezone.utc)
-        target_timestamp = datetime.timestamp(now + timedelta(minutes=30))
-        if target_timestamp > exp_timestamp:
-            access_token = create_access_token(identity=get_jwt_identity())
-            # refresh_token = create_refresh_token(identity=get_jwt_identity())
-            # response = jsonify(access_token=access_token, refresh_token=refresh_token)
-            set_access_cookies(response, access_token)
-            # set_refresh_cookies(response, refresh_token)
-        return response
-    except (RuntimeError, KeyError):
-        # Case where there is not a valid JWT. Just return the original response
-        return response
+# Setup our redis connection for storing the blocklisted tokens. You will probably
+# want your redis instance configured to persist data to disk, so that a restart
+# does not cause your application to forget that a JWT was revoked.
+jwt_redis_blocklist = redis.Redis(
+    host="redis", port=6379, db=0, decode_responses=True
+)
+
+# Callback function to check if a JWT exists in the redis blocklist
+@jwt.token_in_blocklist_loader
+def check_if_token_is_revoked(jwt_header, jwt_payload: dict):
+    jti = jwt_payload["jti"]
+    token_in_redis = jwt_redis_blocklist.get(jti)
+    return token_in_redis is not None
+
+@app.route("/logout", methods=["DELETE"])
+@jwt_required()
+def logout():
+    jti = get_jwt()["jti"]
+    # jwt_redis_blocklist.set(jti, '', ex=config['ACCESS_TOKEN_EXPIRES']))
+    jwt_redis_blocklist.set(jti, '')
+    return jsonify(msg="Access token revoked")
+
 
 @app.route('/', methods=['GET'])
 def hello():
