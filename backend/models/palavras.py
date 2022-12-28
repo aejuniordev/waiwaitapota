@@ -72,8 +72,9 @@ class Palavra(object):
                 # https://www.mongodb.com/docs/manual/reference/operator/query/regex/
                 # https://www.mongodb.com/docs/v4.4/text-search/
                 word["wordPort"]=  { "$regex": wordPort, "$options": 'i'}
-            print(word)
         return self.db.find(word, self.collection_name)
+    def find_by_username(self, username):
+        return self.db.find({'user': {'$eq': username}}, self.collection_name)
 
     def find_by_id(self, id):
         return self.db.find_by_id(id, self.collection_name)

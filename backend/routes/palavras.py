@@ -16,6 +16,7 @@ _uploads = upload.Upload()
 @palavra.route('/', methods=['GET'])
 @palavra.route('/<string:_oid>', methods=['GET'])
 def list_palavras(_oid=None):
+    print("sem autenticação")
     args = request.args
     if _oid:
         attach_image = _uploads.find(_oid, 'image')
@@ -31,6 +32,14 @@ def list_palavras(_oid=None):
         return _result, 200
     else:
         return _palavras.find({}, args), 200
+
+
+@palavra.route('/me', methods=['GET'])
+@jwt_required()
+def get_by_user():
+    identity = get_jwt_identity()
+    return _palavras.find_by_username(identity), 200
+    
 
 @palavra.route('/', methods=['POST'])
 @jwt_required()
@@ -72,7 +81,6 @@ def update_palavra(_oid):
                 if key in request.json:
                     _check[key] = request.json[key]
             response = _palavras.update(_oid, _check)
-            print(response)
             return response, 204 
 
 @palavra.route('/<string:_oid>', methods=['DELETE'])

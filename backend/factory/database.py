@@ -57,6 +57,7 @@ class Database(object):
 
         return found
 
+
     def update(self, id, element, collection_name):
         criteria = {"_id": ObjectId(id)}
 
