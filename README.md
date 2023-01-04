@@ -7,6 +7,7 @@ docker compose up \
 --build
 ```
 `-d`: To running as daemon
+
 `--build`: Rebuilding image
 ## Down container
 ```
