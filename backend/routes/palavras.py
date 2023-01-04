@@ -16,7 +16,6 @@ _uploads = upload.Upload()
 @palavra.route('/', methods=['GET'])
 @palavra.route('/<string:_oid>', methods=['GET'])
 def list_palavras(_oid=None):
-    print("sem autenticação")
     args = request.args
     if _oid:
         attach_image = _uploads.find(_oid, 'image')
@@ -69,6 +68,7 @@ def create_palavra():
             })
             return response, 201
 
+# Todo: Checar se a palavra pertence ao usuário logado
 @palavra.route('/<string:_oid>', methods=['PUT'])
 def update_palavra(_oid):
     if request.method == "PUT":
@@ -84,6 +84,7 @@ def update_palavra(_oid):
             return response, 204 
 
 @palavra.route('/<string:_oid>', methods=['DELETE'])
+# Todo: Checar se a palavra pertence ao usuário logado
 def delete_palavra(_oid):
     if request.method == "DELETE":
          _palavras.delete(_oid)
