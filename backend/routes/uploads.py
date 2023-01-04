@@ -50,13 +50,16 @@ def create_upload():
             return dict(error="Informe o ID da palavra!"), 400
 
 # Todo: Verificar token do usuário logado para deletar a imagem/audio, caso pertença a ele o upload
-# Todo: Checar se tipo de arquivo já está vinculado ao ID da palavra
 @uploads.route('/<path:filename>', methods=['DELETE'])
 @jwt_required()
 def delete_upload(filename=None):
-    gridfs.find_by_id(filename, "fs.files")
-    gridfs.delete_file(filename)
-    return "", 202
+    identity = get_jwt_identity()
+    _check = gridfs.find_by_id(filename, "fs.files")
+    if _check['user'] != identity:
+        return dict(error="Upload não pertence ao usuário!"), 401
+    else:
+        gridfs.delete_file(filename)
+        return "", 202
     
 
 # Todo: Para consultar imagens necessário autenticação
