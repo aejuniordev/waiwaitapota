@@ -73,7 +73,7 @@ class Database(object):
         return bool(deleted.deleted_count)
 
 
-    def save_file(self, filename, fileobj, base="fs", content_type=None, oidword=None, **kwargs):
+    def save_file(self, filename, fileobj, base="fs", content_type=None, oidword=None, user=None, **kwargs):
         if not isinstance(base, str):
             raise TypeError("'base' must be string or unicode")
         if not (hasattr(fileobj, "read") and callable(fileobj.read)):
@@ -82,7 +82,7 @@ class Database(object):
             # https://docs.python.org/pt-br/3/library/mimetypes.html#mimetypes.add_type
             content_type, _ = guess_type(filename)
         storage = GridFS(self.db, base)
-        id = storage.put(fileobj, filename=filename, content_type=content_type, wordOid=oidword, **kwargs)
+        id = storage.put(fileobj, filename=filename, content_type=content_type, wordOid=oidword, user=user, **kwargs)
         return id
 
     def delete_file(self, filename, base="fs", content_type=None, oidword=None, **kwargs):
@@ -108,8 +108,8 @@ class Database(object):
             fileobj = storage.find_one({'_id': ObjectId(filename)})
         except NoFile:
             abort(404)
-        # # mostly copied from flask/helpers.py, with
-        # # modifications for GridFS
+        # mostly copied from flask/helpers.py, with
+        # modifications for GridFS
         # https://gist.github.com/hosackm/289814198f43976aff9b
         data = wrap_file(request.environ, fileobj, buffer_size=1024 * 255)
         response = current_app.response_class(
@@ -119,7 +119,7 @@ class Database(object):
         )
         response.content_length = fileobj.length
         response.last_modified = fileobj.upload_date
-        # # response.set_etag(fileobj.md5)
+        # response.set_etag(fileobj.md5)
         response.cache_control.max_age = cache_for
         response.cache_control.public = True
         response.make_conditional(request)

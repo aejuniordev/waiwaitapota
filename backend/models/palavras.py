@@ -39,7 +39,6 @@ class Palavra(object):
 
         # Fields required for UPDATE
         self.update_required_fields = [
-            "user"
         ]
 
         # Fields optional for UPDATE
@@ -54,7 +53,7 @@ class Palavra(object):
             "synonymPort",
             "synonymWaiwai",
             "approved",
-            "identity"
+            "user"
         ]
 
     def create(self, word):

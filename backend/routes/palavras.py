@@ -15,6 +15,7 @@ _uploads = upload.Upload()
 
 @palavra.route('/', methods=['GET'])
 @palavra.route('/<string:_oid>', methods=['GET'])
+@jwt_required()
 def list_palavras(_oid=None):
     args = request.args
     if _oid:
@@ -68,25 +69,43 @@ def create_palavra():
             })
             return response, 201
 
-# Todo: Checar se a palavra pertence ao usuário logado
+# Todo: Checar se a palavra pertence ao usuário logado ✔️
 @palavra.route('/<string:_oid>', methods=['PUT'])
+@jwt_required()
 def update_palavra(_oid):
+    identity = get_jwt_identity()
     if request.method == "PUT":
         _check = _palavras.find_by_id(_oid)
         if not _check:
             return dict(error="ID inexistente"), 404
         else:
-            del _check['_id']
-            for key in _palavras.fields.keys():
-                if key in request.json:
-                    _check[key] = request.json[key]
-            response = _palavras.update(_oid, _check)
-            return response, 204 
+            if(_check['user'] == identity): 
+                del _check['_id']
+                del _check['user']
+                for key in _palavras.fields.keys():
+                    if key in request.json:
+                        _check[key] = request.json[key]
+                response = _palavras.update(_oid, _check)
+                return response, 204 
+            else:
+                return dict(error="Palavra não pertence ao usuário"),401
 
+
+# Todo: Checar se a palavra pertence ao usuário logado ✔️
 @palavra.route('/<string:_oid>', methods=['DELETE'])
-# Todo: Checar se a palavra pertence ao usuário logado
+@jwt_required()
 def delete_palavra(_oid):
+    identity = get_jwt_identity()
     if request.method == "DELETE":
-         _palavras.delete(_oid)
-         return dict(message="Deleted", _id=_oid), 204
+        _check = _palavras.find_by_id(_oid)
+        if not _check:
+            return dict(error="ID inexistente"), 404
+        else:
+            if(_check['user'] == identity): 
+                _palavras.delete(_oid)
+                return dict(message="Deletada", _id=_oid), 204
+            else:
+                return dict(error="Palavra não pertence ao usuário"),401
+
+            
          
