@@ -69,6 +69,7 @@ app.register_blueprint(auth, url_prefix='/auth')
 app.register_blueprint(uploads, url_prefix='/uploads')
 
 
-if __name__ == "__main__":
-    port = int(os.environ.get('PORT', 5000))
-    app.run(debug=True, host='0.0.0.0', port=port, use_reloader=True )
+# if __name__ == "__main__":
+    # app.run(debug=True, host='0.0.0.0', port=config['PORT_APP'], use_reloader=True )
+    # app.run(host='0.0.0.0', port=config['PORT_APP'])
+    # app.run(host='0.0.0.0')

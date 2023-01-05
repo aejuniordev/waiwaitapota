@@ -1,7 +1,7 @@
 FROM python:3.8.10-slim
 
 RUN apt-get --yes --quiet update && \
-    apt-get --yes --quiet install gcc && \
+    apt-get --yes --quiet install gcc nginx && \
     rm -rf /var/lib/apt/lists/*
 
 ENV PYTHONDONTWRITEBYTECODE 1
@@ -25,3 +25,11 @@ COPY --chown=backend:backend requirements.in .
 RUN pip-compile --output-file=requirements.txt requirements.in && pip install -r requirements.txt
 
 COPY --chown=backend:backend . ./project
+
+# COPY ~/project/waiwaitapota.service /etc/systemd/system/waiwaitapota.service
+
+# RUN sudo systemctl enable waiwaitapota.service
+
+# RUN sudo systemctl start waiwaitapota.service
+
+# CMD [ "gunicorn", "-w 4 -b 0.0.0.0 app:wsgi" ]

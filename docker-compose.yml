@@ -2,9 +2,12 @@ version: '3.8'
 services:
   backend:
     build: ./backend
-    command: python3 project/app.py  # --reload --workers 1 --host 0.0.0.0 --port 8000
+    command: gunicorn --workers 4 --bind 0.0.0.0:5000 --chdir /home/backend/project/ wsgi:app
+    # command: gunicorn -w 3 -b 0.0.0.0:8080 waiwaitapota:wsgi --reload
+    # command: gunicorn -w 4 -b 0.0.0.0 /home/backend/project/wsgi
+    # command: python3 project/app.py  # --reload --workers 1 --host 0.0.0.0 --port 8000
     environment:
-      PORT: 5000
+      PORT_APP: 
       DB_URL: mongodb://mongo
       DB_PORT: 27017
       DB_NAME: waiwaitapota
@@ -32,10 +35,19 @@ services:
       MONGODB_APPLICATION_DATABASE: 
     ports:
       - 27017:27017
+    volumes:
+      - ./mongodbdata:/data/db
   redis:
     image: redis:7.0.7
     ports:
       - 6379:6379
+    # https://stackoverflow.com/questions/67011403/docker-compose-add-data-to-redis
+    # https://geshan.com.np/blog/2022/01/redis-docker/
+    volumes:
+      - ./redis_data:/data
+# volumes:
+#   redis_data:
+#     external: false
   # https://stackoverflow.com/questions/45255066/create-networks-automatically-in-docker-compose
   # https://docs.docker.com/compose/networking/
   # mongo-express:
