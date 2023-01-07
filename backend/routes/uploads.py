@@ -64,7 +64,6 @@ def delete_upload(filename=None):
 
 # Todo: Para consultar imagens necessário autenticação
 @uploads.route('/<path:filename>', methods=['GET'])
-@jwt_required()
 def get_upload(filename=None):
     if request.method == "GET":
         return gridfs.send_file(filename)
