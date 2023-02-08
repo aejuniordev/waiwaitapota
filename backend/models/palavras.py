@@ -58,7 +58,7 @@ class Palavra(object):
 
     def create(self, word):
         # Validator will throw error if invalid
-        word["approved"] = False
+        word["approved"] = True
         self.validator.validate(word, self.fields, self.create_required_fields, self.create_optional_fields)
         res = self.db.insert(word, self.collection_name)
         return dict(_id=res)
