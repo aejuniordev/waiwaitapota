@@ -26,6 +26,8 @@ services:
     depends_on:
       - mongo
     restart: always
+    networks:
+      - waiwainetwork
   mongo:
     image: mongo:4.4.18
     restart: always
@@ -35,16 +37,25 @@ services:
       MONGODB_APPLICATION_DATABASE: 
     volumes:
       - ./mongodbdata:/data/db
-    ports:
-      - 27017:27017
+    # ports:
+    #   - 27017:27017
+    networks:
+      - waiwainetwork
   redis:
     image: redis:7.0.7
-    ports:
-      - 6379:6379
+    # ports:
+    #   - 6379:6379
     # https://stackoverflow.com/questions/67011403/docker-compose-add-data-to-redis
     # https://geshan.com.np/blog/2022/01/redis-docker/
     volumes:
       - ./redis_data:/data
+    networks:
+      - waiwainetwork
+networks:
+  waiwainetwork:
+  # Necessário criar rede
+    driver: bridge
+    external: true
 # volumes:
 #   redis_data:
 #     external: false
