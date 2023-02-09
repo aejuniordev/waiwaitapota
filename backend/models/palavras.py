@@ -67,6 +67,9 @@ class Palavra(object):
         if args:
             category= args[0].get("filters[category]")
             wordPort= args[0].get("filters[wordPort]")
+            """
+            Filters: +approved status
+            """
             if category:
                 word["category"]=category
             elif wordPort: 
