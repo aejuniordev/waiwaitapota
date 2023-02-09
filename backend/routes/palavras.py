@@ -16,6 +16,7 @@ _uploads = upload.Upload()
 @palavra.route('/', methods=['GET'])
 @palavra.route('/<string:_oid>', methods=['GET'])
 @jwt_required()
+#Busca a palavras pelo ID
 def list_palavras(_oid=None):
     args = request.args
     if _oid:
@@ -33,7 +34,7 @@ def list_palavras(_oid=None):
     else:
         return _palavras.find({}, args), 200
 
-
+# Retorna todas as palavras cadastradas pelo usuario logado
 @palavra.route('/me', methods=['GET'])
 @jwt_required()
 def get_by_user():
