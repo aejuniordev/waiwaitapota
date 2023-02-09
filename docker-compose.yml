@@ -21,6 +21,7 @@ services:
       REDIS_PORT:
     ports:
       - 80:5000
+      - 443:5000
     volumes:
       - ./backend:/home/backend/project
     depends_on:
