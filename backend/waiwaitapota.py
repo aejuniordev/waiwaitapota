@@ -19,7 +19,7 @@ from config import config
 import redis
 
 app = Flask(__name__)
-CORS(app, resources={r"/*": {"origins": "*"}})
+CORS(app, resources={r"/*": {"origins": "*", "Referrer-Policy": "upgrade-insecure-requests"}})
 
 # Setup the Flask-JWT-Extended extension
 

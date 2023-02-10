@@ -11,16 +11,3 @@ Restart=always
 [Install]
 WantedBy=multi-user.target
 
-[uwsgi]
-;master process with 5 workers.
-master = true
-processes = 5
-
-shared-socket = 0.0.0.0:443
-https =  =0,foo.crt,foo.key,HIGH
-
-module=project.wsgi:application
-
-enable-threads = true
-vacuum = true
-die-on-term = true
