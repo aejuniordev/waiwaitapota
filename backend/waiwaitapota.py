@@ -19,6 +19,8 @@ from config import config
 import redis
 
 app = Flask(__name__)
+# https://stackoverflow.com/questions/33241050/trailing-slash-triggers-404-in-flask-path-rule
+app.url_map.strict_slashes = False
 CORS(app, resources={r"/*": {"origins": "*"}})
 
 # Setup the Flask-JWT-Extended extension
