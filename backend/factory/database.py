@@ -18,7 +18,7 @@ class Database(object):
     def __init__(self):
         self.client = MongoClient(config["DB_URL"]+":"+str(config["DB_PORT"]))  # configure db url
         self.db = self.client[config['DB_NAME']]  # configure db name
-        self.db["palavras"].create_index([("wordPort", TEXT)], default_language='portuguese')
+        self.db["palavras"].create_index([("meaningWaiwai", TEXT)], default_language='portuguese')
 
     def insert(self, element, collection_name):
         # https://stackoverflow.com/questions/2150739/iso-time-iso-8601-in-python

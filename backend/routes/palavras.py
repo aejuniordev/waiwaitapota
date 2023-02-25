@@ -47,23 +47,23 @@ def get_by_user():
 def create_palavra():    
     if request.method == "POST":
         identity = get_jwt_identity()
-        wordPort = request.json["wordPort"] 
-        translationWaiwai = request.json["translationWaiwai"]
-        category = request.json["category"]
-        meaningPort = request.json["meaningPort"]
         meaningWaiwai = request.json["meaningWaiwai"]
+        meaningPort = request.json["meaningPort"]
+        phonemicWaiwai = request.json["phonemicWaiwai"]
+        exampleSentence = request.json["exampleSentence"]
+        category = request.json["category"]
         synonymPort = request.json["synonymPort"]
         synonymWaiwai = request.json["synonymWaiwai"]
-        _check = _palavras.find(word={"wordPort":wordPort})
+        _check = _palavras.find(word={"meaningWaiwai":meaningWaiwai})
         if _check:
             return dict(error="Palavra já existe"), 409
         else:
             response = _palavras.create({
-                "wordPort": wordPort, 
-                "translationWaiwai": translationWaiwai, 
-                "category": category, 
-                "meaningPort": meaningPort, 
                 "meaningWaiwai": meaningWaiwai, 
+                "meaningPort": meaningPort, 
+                "phonemicWaiwai": phonemicWaiwai,
+                "exampleSentence": exampleSentence,
+                "category": category, 
                 "synonymPort": synonymPort, 
                 "synonymWaiwai": synonymWaiwai,
                 "user": identity
