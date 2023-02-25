@@ -10,11 +10,11 @@ class Palavra(object):
         self.collection_name = 'palavras'  # collection name
 
         self.fields = {
-            "wordPort": "string",
-            "translationWaiwai": "string",
-            "category": "string",
-            "meaningPort": "string",
             "meaningWaiwai": "string",
+            "meaningPort": "string",
+            "phonemicWaiwai": "string",
+            "exampleSentence": "string",
+            "category": "string",
             "synonymPort": "string",
             "synonymWaiwai": "string",
             "approved": "boolean",
@@ -22,16 +22,16 @@ class Palavra(object):
         }
 
         self.create_required_fields = [
-            "wordPort",
-            "translationWaiwai",
+            "meaningWaiwai",
+            "meaningPort",
             "user"
         ]
 
         # Fields optional for CREATE
         self.create_optional_fields = [
+            "phonemicWaiwai",
+            "exampleSentence",
             "category",
-            "meaningPort",
-            "meaningWaiwai",
             "synonymPort",
             "synonymWaiwai",
             "approved"
@@ -45,11 +45,11 @@ class Palavra(object):
         self.update_optional_fields = [
             "updated",
             "created",
-            "wordPort",
-            "translationWaiwai",
-            "category",
-            "meaningPort",
             "meaningWaiwai",
+            "meaningPort",
+            "phonemicWaiwai",
+            "exampleSentence",
+            "category",
             "synonymPort",
             "synonymWaiwai",
             "approved",
@@ -66,13 +66,13 @@ class Palavra(object):
     def find(self, word, *args):  # find all
         if args:
             category= args[0].get("filters[category]")
-            wordPort= args[0].get("filters[wordPort]")
+            meaningPort= args[0].get("filters[meaningPort]")
             if category:
                 word["category"]=category
-            elif wordPort: 
+            elif meaningPort: 
                 # https://www.mongodb.com/docs/manual/reference/operator/query/regex/
                 # https://www.mongodb.com/docs/v4.4/text-search/
-                word["wordPort"]=  { "$regex": wordPort, "$options": 'i'}
+                word["meaningPort"]=  { "$regex": meaningPort, "$options": 'i'}
         return self.db.find(word, self.collection_name)
     def find_by_username(self, username):
         return self.db.find({'user': {'$eq': username}}, self.collection_name)
