@@ -4,14 +4,13 @@ from bson import ObjectId
 from config import config
 
 from gridfs import GridFS, NoFile
-from flask import abort, current_app, request, make_response, jsonify
+from flask import abort, current_app, request
 from werkzeug.wsgi import wrap_file
-import mimetypes
-from mimetypes import guess_type
+from mimetypes import guess_type, add_type
 
 # Adicionando tipos pendentes de extensões
-mimetypes.add_type('audio/mpeg', '.m4a', strict=True)
-mimetypes.add_type('audio/webm;codecs=opus/json', '.weba', strict=True)
+add_type('audio/mpeg', '.m4a', strict=True)
+add_type('audio/webm;codecs=opus/json', '.weba', strict=True)
 
 
 class Database(object):
@@ -28,26 +27,31 @@ class Database(object):
         
         return str(inserted.inserted_id)
 
-    def find(self, criteria, collection_name, projection=None, sort=[("updated", DESCENDING)], limit=0, cursor=False ):  # find all from db
-
+    def find(self, criteria, collection_name, projection=None, sort=[("updated", DESCENDING)], limit=10, cursor=False, page=0):  # find all from db
         if "_id" in criteria:
             criteria["_id"] = ObjectId(criteria["_id"])
-
-        found = self.db[collection_name].find(filter=criteria, projection=projection, limit=limit, sort=sort)
-
+        found = self.db[collection_name].find(filter=criteria, projection=projection, limit=limit, sort=sort).skip(page*limit)
         if cursor:
             return found
-
         found = list(found)
-
         for i in range(len(found)):  # to serialize object id need to convert string
             if "_id" in found[i]:
                 found[i]["_id"] = str(found[i]["_id"])
-
         return found
 
     def find_by_id(self, id, collection_name):
         found = self.db[collection_name].find_one({"_id": ObjectId(id)})
+        
+        if found is None:
+            abort(404)
+        
+        if "_id" in found:
+             found["_id"] = str(found["_id"])
+
+        return found
+
+    def find_by_username(self, username, collection_name):
+        found = self.db[collection_name].find_one({"username": username})
         
         if found is None:
             abort(404)

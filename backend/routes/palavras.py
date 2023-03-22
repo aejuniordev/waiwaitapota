@@ -1,6 +1,6 @@
 from flask import Flask, request, jsonify, Blueprint
 from flask_jwt_extended import jwt_required, get_jwt_identity
-from models import palavras, upload # call model file
+from models import palavras, upload, usuarios # call model file
 
 # todo: refatorar essa parte
 from factory.database import Database
@@ -11,6 +11,7 @@ palavra = Blueprint('palavras', __name__)
 
 _palavras = palavras.Palavra()
 _uploads = upload.Upload()
+_usuarios = usuarios.Usuario()
 
 
 @palavra.route('/', methods=['GET'])
@@ -32,7 +33,8 @@ def list_palavras(_oid=None):
             _result.update({'audio': _id})
         return _result, 200
     else:
-        return _palavras.find({}, args), 200
+        _result = _palavras.find({}, args)
+        return _result, 200
 
 # Retorna todas as palavras cadastradas pelo usuario logado
 @palavra.route('/me', methods=['GET'])
@@ -80,17 +82,17 @@ def update_palavra(_oid):
         if not _check:
             return dict(error="ID inexistente"), 404
         else:
-            if(_check['user'] == identity): 
+            _profile = _usuarios.find_by_username(identity)
+            if(_check['user'] == identity or _profile.get('permission') == 0): 
                 del _check['_id']
                 del _check['user']
                 for key in _palavras.fields.keys():
                     if key in request.json:
                         _check[key] = request.json[key]
                 response = _palavras.update(_oid, _check)
-                return response, 204 
+                return response, 204
             else:
                 return dict(error="Palavra não pertence ao usuário"),401
-
 
 # Todo: Checar se a palavra pertence ao usuário logado ✔️
 @palavra.route('/<string:_oid>', methods=['DELETE'])
@@ -102,7 +104,8 @@ def delete_palavra(_oid):
         if not _check:
             return dict(error="ID inexistente"), 404
         else:
-            if(_check['user'] == identity): 
+            _profile = _usuarios.find_by_username(identity)
+            if(_check['user'] == identity or _profile.get('permission') == 0): 
                 _palavras.delete(_oid)
                 return dict(message="Deletada", _id=_oid), 204
             else:

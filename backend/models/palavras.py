@@ -68,12 +68,15 @@ class Palavra(object):
             category= args[0].get("filters[category]")
             meaningPort= args[0].get("filters[meaningPort]")
             if category:
-                word["category"]=category
+                word["category"] = category
             elif meaningPort: 
                 # https://www.mongodb.com/docs/manual/reference/operator/query/regex/
                 # https://www.mongodb.com/docs/v4.4/text-search/
-                word["meaningPort"]=  { "$regex": meaningPort, "$options": 'i'}
-        return self.db.find(word, self.collection_name)
+                word["meaningPort"] = { "$regex": meaningPort, "$options": 'i'}
+        limit = args[0].get('limit', default=10, type=int)
+        page = args[0].get('page', default=0, type=int)
+        return self.db.find(word, self.collection_name, limit=limit, page=page)
+    
     def find_by_username(self, username):
         return self.db.find({'user': {'$eq': username}}, self.collection_name)
 
