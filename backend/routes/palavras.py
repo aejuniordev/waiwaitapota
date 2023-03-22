@@ -41,7 +41,8 @@ def list_palavras(_oid=None):
 @jwt_required()
 def get_by_user():
     identity = get_jwt_identity()
-    return _palavras.find_by_username(identity), 200
+    args = request.args
+    return _palavras.find_by_username(identity, args), 200
     
 
 @palavra.route('/', methods=['POST'])

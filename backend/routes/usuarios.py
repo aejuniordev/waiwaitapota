@@ -5,7 +5,7 @@ usuario = Blueprint('usuarios', __name__)
 
 _usuarios = usuarios.Usuario()
 
-# Todo: Operations with users
+# Todo: Operations with users ADMIN
 @usuario.route('/', methods=['GET'])
 def list_usuarios():
     return {"OK": "usuarios"}, 200

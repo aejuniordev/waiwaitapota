@@ -22,7 +22,7 @@ services:
       ADMIN_EMAIL: 
       # admin@waiwai.com
       ADMIN_PASSWORD: 
-      # admin
+      # admin123
     ports:
       - 5000:5000
     volumes:
