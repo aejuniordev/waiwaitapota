@@ -85,6 +85,9 @@ class Palavra(object):
     def find_by_id(self, id):
         return self.db.find_by_id(id, self.collection_name)
 
+    def find_by_meaning(self, meaning):
+        return self.db.find({"meaningWaiwai": meaning}, self.collection_name)
+
     def update(self, id, word):
         word["updated"] = datetime.now().isoformat()
         self.validator.validate(word, self.fields, self.update_required_fields, self.update_optional_fields)
@@ -92,3 +95,6 @@ class Palavra(object):
 
     def delete(self, id):
         return self.db.delete(id, self.collection_name)
+
+    def count_documents(self):
+        return self.db.count(self.collection_name)

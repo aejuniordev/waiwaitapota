@@ -33,8 +33,11 @@ def list_palavras(_oid=None):
             _result.update({'audio': _id})
         return _result, 200
     else:
+        _total = _palavras.count_documents()
         _result = _palavras.find({}, args)
-        return _result, 200
+        response = jsonify(_result)
+        response.headers.set('Total-Documents ', _total)
+        return response, 200
 
 # Retorna todas as palavras cadastradas pelo usuario logado
 @palavra.route('/me', methods=['GET'])
@@ -48,8 +51,8 @@ def get_by_user():
 @palavra.route('/', methods=['POST'])
 @jwt_required()
 def create_palavra():    
+    identity = get_jwt_identity()
     if request.method == "POST":
-        identity = get_jwt_identity()
         meaningWaiwai = request.json["meaningWaiwai"]
         meaningPort = request.json["meaningPort"]
         phonemicWaiwai = request.json["phonemicWaiwai"]
@@ -57,7 +60,7 @@ def create_palavra():
         category = request.json["category"]
         synonymPort = request.json["synonymPort"]
         synonymWaiwai = request.json["synonymWaiwai"]
-        _check = _palavras.find(word={"meaningWaiwai":meaningWaiwai})
+        _check = _palavras.find_by_meaning(meaningWaiwai)
         if _check:
             return dict(error="Palavra já existe"), 409
         else:

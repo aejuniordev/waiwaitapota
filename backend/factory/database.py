@@ -19,6 +19,11 @@ class Database(object):
         self.db = self.client[config['DB_NAME']]  # configure db name
         self.db["palavras"].create_index([("meaningWaiwai", TEXT)], default_language='portuguese')
 
+    def count(self, collection_name):
+        # https://stackoverflow.com/questions/2150739/iso-time-iso-8601-in-python
+        count = self.db[collection_name].count_documents({})
+        return count
+
     def insert(self, element, collection_name):
         # https://stackoverflow.com/questions/2150739/iso-time-iso-8601-in-python
         element["created"] = datetime.now().isoformat()
