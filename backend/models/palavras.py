@@ -74,13 +74,13 @@ class Palavra(object):
                 # https://www.mongodb.com/docs/v4.4/text-search/
                 word["meaningPort"] = { "$regex": meaningPort, "$options": 'i'}
         limit = args[0].get('limit', default=10, type=int)
-        page = args[0].get('page', default=0, type=int)
-        return self.db.find(word, self.collection_name, limit=limit, page=page)
+        page = args[0].get('page', default=1, type=int)
+        return self.db.find(word, self.collection_name, limit=limit, page=(page-1))
     
     def find_by_username(self, username, *args):
         limit = args[0].get('limit', default=10, type=int)
-        page = args[0].get('page', default=0, type=int)
-        return self.db.find({'user': {'$eq': username}}, self.collection_name, limit=limit, page=page)
+        page = args[0].get('page', default=1, type=int)
+        return self.db.find({'user': {'$eq': username}}, self.collection_name, limit=limit, page=(page-1))
 
     def find_by_id(self, id):
         return self.db.find_by_id(id, self.collection_name)

@@ -41,7 +41,9 @@ class Usuario(object):
             "username",
             "email",
             "password",
-            "permission"
+            "permission",
+            "created",
+            "updated",
         ]
 
     def create(self, user):
@@ -56,18 +58,31 @@ class Usuario(object):
         res = self.db.insert(user, self.collection_name)
         return dict(_id=res)
     
-    def find(self, user):  # find all
-        return self.db.find(user, self.collection_name)
+    def find(self, user, projection=None, limit=None, page=None):
+        return self.db.find(user, self.collection_name, projection=projection, limit=limit, page=(page-1))
 
-    def find_by_id(self, id):
-        return self.db.find_by_id(id, self.collection_name)
+    def find_by_id(self, id, projection=None):
+        return self.db.find_by_id(id, self.collection_name, projection=projection)
     
     def find_by_username(self, username):
         return self.db.find_by_username(username, self.collection_name)
 
+    def find_by_username_or_email(self, username, email):
+        return self.db.find_by_username_or_email(username, email, self.collection_name)
+
+    def find_by_email(self, email):
+        return self.db.find_by_email(email, self.collection_name)
+
     def update(self, id, user):
+        print(self.update_required_fields, self.update_optional_fields)
         self.validator.validate(user, self.fields, self.update_required_fields, self.update_optional_fields)
         return self.db.update(id, user,self.collection_name)
 
     def delete(self, id):
         return self.db.delete(id, self.collection_name)
+    
+    def count_documents(self):
+        return self.db.count(self.collection_name)
+    
+    def check_admin(self, username):
+        return self.db.find_starting(username, self.collection_name)

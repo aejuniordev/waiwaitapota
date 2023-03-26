@@ -21,7 +21,6 @@ import redis
 
 app = Flask(__name__)
 CORS(app, resources={r"/*": {"origins": "*"}})
-
 # Setup the Flask-JWT-Extended extension
 
 # If true this will only allow the cookies that contain your JWTs to be sent
@@ -30,6 +29,7 @@ CORS(app, resources={r"/*": {"origins": "*"}})
 app.config["JWT_SECRET_KEY"] = config["SECRET_KEY"]  # Change this!
 app.config["JWT_ACCESS_TOKEN_EXPIRES"] = timedelta(hours=config["ACCESS_TOKEN_EXPIRES"])
 app.config["JWT_REFRESH_TOKEN_EXPIRES"] = timedelta(days=config["REFRESH_TOKEN_EXPIRES"])
+app.url_map.strict_slashes = False
 
 jwt = JWTManager(app)
 
