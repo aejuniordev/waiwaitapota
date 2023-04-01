@@ -35,11 +35,11 @@ def list_palavras(_oid=None):
     else:
         _total = _palavras.count_documents()
         _result = _palavras.find({}, args)
-        response = jsonify(_result)
-        resp = Response(_result)
-        resp.headers['Total-Documents'] = _total
+        # response = jsonify(_result)
+        # resp = Response(_result)
+        # resp.headers['Total-Documents'] = _total
         # response.headers.set('Total-Documents ', )
-        return resp, 200
+        return dict(data=_result, total=_total), 200
 
 # Retorna todas as palavras cadastradas pelo usuario logado
 @palavra.route('/me', methods=['GET'])
