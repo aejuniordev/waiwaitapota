@@ -1,7 +1,9 @@
 from waiwaitapota import app
+from starting_cfg import create_starting
 
 if __name__ == '__main__':
-    app.run(debug=False)
+    create_starting()
+    app.run(debug=False, threaded=True)
 
 # https://yasoob.me/posts/how-to-setup-and-deploy-jwt-auth-using-react-and-flask/
 # https://github.com/vimalloc/flask-jwt-extended/issues/240
