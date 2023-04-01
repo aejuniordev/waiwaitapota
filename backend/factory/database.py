@@ -15,7 +15,7 @@ add_type('audio/webm;codecs=opus/json', '.weba', strict=True)
 
 class Database(object):
     def __init__(self):
-        self.client = MongoClient(config["DB_URL"]+":"+str(config["DB_PORT"]))  # configure db url
+        self.client = MongoClient(config["DB_URL"]+":"+str(config["DB_PORT"]), username=str(config["DB_USER"]), password=str(config["DB_PASSWORD"]))  # configure db url
         self.db = self.client[config['DB_NAME']]  # configure db name
         self.db["palavras"].create_index([("meaningWaiwai", TEXT)], default_language='portuguese')
 
