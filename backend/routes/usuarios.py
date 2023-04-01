@@ -77,7 +77,6 @@ def update_usuario(_oid):
                                     return jsonify(error="Email ou usuário em uso"), 409
                         else: 
                             _check[key] = request.json[key]
-                print(_check)                        
                 response = _usuarios.update(_oid, _check)
                 return response, 204
             else:
