@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify, Blueprint
+from flask import Flask, request, jsonify, Blueprint, Response
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from models import palavras, upload, usuarios # call model file
 
@@ -36,8 +36,10 @@ def list_palavras(_oid=None):
         _total = _palavras.count_documents()
         _result = _palavras.find({}, args)
         response = jsonify(_result)
-        response.headers.set('Total-Documents ', _total)
-        return response, 200
+        resp = Response(_result)
+        resp.headers['Total-Documents'] = _total
+        # response.headers.set('Total-Documents ', )
+        return resp, 200
 
 # Retorna todas as palavras cadastradas pelo usuario logado
 @palavra.route('/me', methods=['GET'])
