@@ -137,6 +137,8 @@ class Database(object):
         try:
             fileobj = storage.find_one({'_id': ObjectId(filename)})
         except NoFile:
+            abort(500)
+        if fileobj is None:
             abort(404)
         # mostly copied from flask/helpers.py, with
         # modifications for GridFS
