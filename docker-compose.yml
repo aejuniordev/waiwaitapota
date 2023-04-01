@@ -15,6 +15,7 @@ services:
       DB_NAME: waiwaitapota
       DB_USER: 
       DB_PASSWORD:
+      # Obrigatório em PROD
       SECRET_KEY: 
       ACCESS_TOKEN_EXPIRES:
       REFRESH_TOKEN_EXPIRES:
