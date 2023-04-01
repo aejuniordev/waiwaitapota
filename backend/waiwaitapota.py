@@ -20,10 +20,10 @@ from starting_cfg import create_starting
 import redis
 
 app = Flask(__name__)
+CORS(app)
 # https://stackoverflow.com/questions/33241050/trailing-slash-triggers-404-in-flask-path-rule
 app.url_map.strict_slashes = False
-CORS(app, resources={r"/*": {"origins": "*"}})
-# CORS(app)
+# CORS(app, resources={r"/*": {"origins": "*"}})
 # Setup the Flask-JWT-Extended extension
 
 # If true this will only allow the cookies that contain your JWTs to be sent
