@@ -1,14 +1,15 @@
 from flask import Flask, request, jsonify, Blueprint, redirect, url_for
 from factory.database import Database
 from flask_jwt_extended import jwt_required, get_jwt_identity
-from models import palavras, upload
-import mimetypes
+from models import palavras, upload, usuarios
 from mimetypes import guess_type
 
 uploads = Blueprint('uploads', __name__)
 gridfs = Database()
 _palavras = palavras.Palavra()
 _uploads = upload.Upload()
+_usuarios = usuarios.Usuario()
+
 
 # Todo: Verificar token do usuário logado para postar a imagem e anexar email do token ✔️
 # Todo: Checar se tipo de arquivo já está vinculado ao ID da palavra ✔️
@@ -24,7 +25,8 @@ def create_upload():
             if not _check:
                 return dict(error="Palavra inexistente! Insira um ID válido."), 404
             else:
-                if _check['user'] != identity:
+                _profile = _usuarios.find_by_username(identity)
+                if _check['user'] != identity or _profile.get('permission') != 0:
                     return dict(error="Palavra não pertence ao usuário!"), 401
                 else:
                     file = request.files["file"]
@@ -55,7 +57,8 @@ def create_upload():
 def delete_upload(filename=None):
     identity = get_jwt_identity()
     _check = gridfs.find_by_id(filename, "fs.files")
-    if _check['user'] != identity:
+    _profile = _usuarios.find_by_username(identity)
+    if _check['user'] != identity or _profile.get('permission') != 0:
         return dict(error="Upload não pertence ao usuário!"), 401
     else:
         gridfs.delete_file(filename)

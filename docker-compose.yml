@@ -19,6 +19,13 @@ services:
       REDIS_HOST:
       REDIS_DB:
       REDIS_PORT:
+      # Admin user 
+      ADMIN_USERNAME: 
+      # admin
+      ADMIN_EMAIL: 
+      # admin@waiwai.com
+      ADMIN_PASSWORD: 
+      # admin123
     ports:
       - 80:5000
       - 443:5000

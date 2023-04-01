@@ -16,13 +16,13 @@ from routes.uploads import uploads
 
 
 from config import config
+from starting_cfg import create_starting
 import redis
 
 app = Flask(__name__)
 # https://stackoverflow.com/questions/33241050/trailing-slash-triggers-404-in-flask-path-rule
 app.url_map.strict_slashes = False
 CORS(app, resources={r"/*": {"origins": "*"}})
-
 # Setup the Flask-JWT-Extended extension
 
 # If true this will only allow the cookies that contain your JWTs to be sent
@@ -31,6 +31,7 @@ CORS(app, resources={r"/*": {"origins": "*"}})
 app.config["JWT_SECRET_KEY"] = config["SECRET_KEY"]  # Change this!
 app.config["JWT_ACCESS_TOKEN_EXPIRES"] = timedelta(hours=config["ACCESS_TOKEN_EXPIRES"])
 app.config["JWT_REFRESH_TOKEN_EXPIRES"] = timedelta(days=config["REFRESH_TOKEN_EXPIRES"])
+app.url_map.strict_slashes = False
 
 jwt = JWTManager(app)
 
@@ -71,7 +72,7 @@ app.register_blueprint(auth, url_prefix='/auth')
 app.register_blueprint(uploads, url_prefix='/uploads')
 
 
-# if __name__ == "__main__":
-    # app.run(debug=True, host='0.0.0.0', port=config['PORT_APP'], use_reloader=True )
-    # app.run(host='0.0.0.0', port=config['PORT_APP'])
-    # app.run(host='0.0.0.0')
+if __name__ == "__main__":
+    create_starting()
+    port = int(os.environ.get('PORT', 5000))
+    app.run(debug=True, host='0.0.0.0', port=port, use_reloader=True )

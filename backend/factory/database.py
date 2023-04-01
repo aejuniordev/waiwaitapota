@@ -4,14 +4,13 @@ from bson import ObjectId
 from config import config
 
 from gridfs import GridFS, NoFile
-from flask import abort, current_app, request, make_response, jsonify
+from flask import abort, current_app, request
 from werkzeug.wsgi import wrap_file
-import mimetypes
-from mimetypes import guess_type
+from mimetypes import guess_type, add_type
 
 # Adicionando tipos pendentes de extensões
-mimetypes.add_type('audio/mpeg', '.m4a', strict=True)
-mimetypes.add_type('audio/webm;codecs=opus/json', '.weba', strict=True)
+add_type('audio/mpeg', '.m4a', strict=True)
+add_type('audio/webm;codecs=opus/json', '.weba', strict=True)
 
 
 class Database(object):
@@ -19,6 +18,11 @@ class Database(object):
         self.client = MongoClient(config["DB_URL"]+":"+str(config["DB_PORT"]))  # configure db url
         self.db = self.client[config['DB_NAME']]  # configure db name
         self.db["palavras"].create_index([("meaningWaiwai", TEXT)], default_language='portuguese')
+
+    def count(self, collection_name):
+        # https://stackoverflow.com/questions/2150739/iso-time-iso-8601-in-python
+        count = self.db[collection_name].count_documents({})
+        return count
 
     def insert(self, element, collection_name):
         # https://stackoverflow.com/questions/2150739/iso-time-iso-8601-in-python
@@ -28,26 +32,20 @@ class Database(object):
         
         return str(inserted.inserted_id)
 
-    def find(self, criteria, collection_name, projection=None, sort=[("updated", DESCENDING)], limit=0, cursor=False ):  # find all from db
-
+    def find(self, criteria, collection_name, projection=None, sort=[("updated", DESCENDING)], limit=10, cursor=False, page=0):  # find all from db
         if "_id" in criteria:
             criteria["_id"] = ObjectId(criteria["_id"])
-
-        found = self.db[collection_name].find(filter=criteria, projection=projection, limit=limit, sort=sort)
-
+        found = self.db[collection_name].find(filter=criteria, projection=projection, limit=limit, sort=sort).skip(page*limit)
         if cursor:
             return found
-
         found = list(found)
-
         for i in range(len(found)):  # to serialize object id need to convert string
             if "_id" in found[i]:
                 found[i]["_id"] = str(found[i]["_id"])
-
         return found
 
-    def find_by_id(self, id, collection_name):
-        found = self.db[collection_name].find_one({"_id": ObjectId(id)})
+    def find_by_id(self, id, collection_name, projection=None):
+        found = self.db[collection_name].find_one({"_id": ObjectId(id)}, projection=projection)
         
         if found is None:
             abort(404)
@@ -55,6 +53,38 @@ class Database(object):
         if "_id" in found:
              found["_id"] = str(found["_id"])
 
+        return found
+
+    def find_by_username(self, username, collection_name):
+        found = self.db[collection_name].find_one({"username": username})
+        
+        if found is None:
+            abort(404)
+        
+        if "_id" in found:
+             found["_id"] = str(found["_id"])
+
+        return found
+    
+    def find_starting(self, username, collection_name):
+        found = self.db[collection_name].find({"username": username})
+        return found
+
+    def find_by_username_or_email(self, username, email, collection_name):
+        found = self.db[collection_name].find_one({ "$or": [ {"username": username }, {"email": email} ] })
+        if found is None:
+            return None
+        if "_id" in found:
+             found["_id"] = str(found["_id"])
+        return found
+    
+
+    def find_by_email(self, email, collection_name):
+        found = self.db[collection_name].find_one({"email": email})
+        if found is None:
+            abort(404)
+        if "_id" in found:
+             found["_id"] = str(found["_id"])
         return found
 
 
@@ -124,7 +154,7 @@ class Database(object):
         response.cache_control.public = True
         response.make_conditional(request)
         return response
-
+    
     # def send_file(self, filename, base="fs", version=-1, cache_for=31536000):
     #     try:
     #         file = GridFS(self.db, base).find_one({"filename": filename})
