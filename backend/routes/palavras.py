@@ -35,10 +35,6 @@ def list_palavras(_oid=None):
     else:
         _total = _palavras.count_documents()
         _result = _palavras.find({}, args)
-        # response = jsonify(_result)
-        # resp = Response(_result)
-        # resp.headers['Total-Documents'] = _total
-        # response.headers.set('Total-Documents ', )
         return dict(data=_result, total=_total), 200
 
 # Retorna todas as palavras cadastradas pelo usuario logado
@@ -47,7 +43,9 @@ def list_palavras(_oid=None):
 def get_by_user():
     identity = get_jwt_identity()
     args = request.args
-    return _palavras.find_by_username(identity, args), 200
+    _total = _palavras.count_documents({"user": identity})
+    _result = _palavras.find_by_username(identity, args)
+    return dict(data=_result, total=_total), 200
     
 
 @palavra.route('/', methods=['POST'])

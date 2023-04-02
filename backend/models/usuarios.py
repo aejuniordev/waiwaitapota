@@ -81,8 +81,8 @@ class Usuario(object):
     def delete(self, id):
         return self.db.delete(id, self.collection_name)
     
-    def count_documents(self):
-        return self.db.count(self.collection_name)
+    def count_documents(self, criteria={}):
+        return self.db.count(self.collection_name, criteria)
     
     def check_admin(self, username):
         return self.db.find_starting(username, self.collection_name)

@@ -42,9 +42,7 @@ def list_usuarios(_oid=None):
                     limit=limit,
                     page=page
                     )
-                response = jsonify(_result)
-                response.headers.set('Total-Documents ', _total)
-                return response, 200
+                return dict(data=_result, total=_total), 200
             else: return "", 400
 
 # TODO: Check if username or email exists before create
