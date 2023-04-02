@@ -21,9 +21,9 @@ _usuarios = usuarios.Usuario()
 def list_palavras(_oid=None):
     args = request.args
     if _oid:
+        _result = _palavras.find_by_id(_oid)
         attach_image = _uploads.find(_oid, 'image')
         attach_audio = _uploads.find(_oid, 'audio')
-        _result = _palavras.find_by_id(_oid)
         _result.update({'audio': None,'image': None})
         if len(attach_image):
             _id = attach_image[0]['_id']
