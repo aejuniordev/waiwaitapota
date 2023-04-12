@@ -79,3 +79,20 @@ def update_usuario(_oid):
                 return response, 204
             else:
                 return dict(error="Palavra não pertence ao usuário"), 401
+
+# Todo: Checar se a palavra pertence ao usuário logado ✔️
+@usuario.route('/<string:_oid>', methods=['DELETE'])
+@jwt_required()
+def delete_usuario(_oid):
+    identity = get_jwt_identity()
+    if request.method == "DELETE":
+        _check = _usuarios.find_by_id(_oid)
+        if not _check:
+            return dict(error="ID inexistente"), 404
+        else:
+            _profile = _usuarios.find_by_username(identity)
+            if(_profile.get('permission') == 0): 
+                _usuarios.delete(_oid)
+                return dict(message="Deletado", _id=_oid), 204
+            else:
+                return dict(error="Usuário sem permissão"), 401
