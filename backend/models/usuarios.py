@@ -74,7 +74,6 @@ class Usuario(object):
         return self.db.find_by_email(email, self.collection_name)
 
     def update(self, id, user):
-        print(self.update_required_fields, self.update_optional_fields)
         self.validator.validate(user, self.fields, self.update_required_fields, self.update_optional_fields)
         return self.db.update(id, user,self.collection_name)
 

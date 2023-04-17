@@ -73,5 +73,4 @@ app.register_blueprint(uploads, url_prefix='/uploads')
 
 @app.before_first_request
 def create_user():
-    print("teste")
     create_starting()

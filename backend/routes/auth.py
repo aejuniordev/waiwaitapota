@@ -23,7 +23,6 @@ def create_user():
             return jsonify(error="Email ou usuário em uso"), 409
         else:
             if not helpers.check_email(email):
-                print(helpers.check_email(email))
                 return jsonify(error="Email inválido"), 400  
             if not helpers.check_username(username):
                 return jsonify(error="Nome de usuário inválido"), 400
