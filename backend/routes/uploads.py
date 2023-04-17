@@ -26,7 +26,7 @@ def create_upload():
                 return dict(error="Palavra inexistente! Insira um ID válido."), 404
             else:
                 _profile = _usuarios.find_by_username(identity)
-                if _check['user'] != identity or _profile.get('permission') != 0:
+                if _check['user'] != identity or _profile.get('permission') != 3:
                     return dict(error="Palavra não pertence ao usuário!"), 401
                 else:
                     file = request.files["file"]
@@ -58,7 +58,7 @@ def delete_upload(filename=None):
     identity = get_jwt_identity()
     _check = gridfs.find_by_id(filename, "fs.files")
     _profile = _usuarios.find_by_username(identity)
-    if _check['user'] != identity or _profile.get('permission') != 0:
+    if _check['user'] != identity or _profile.get('permission') != 3:
         return dict(error="Upload não pertence ao usuário!"), 401
     else:
         gridfs.delete_file(filename)

@@ -87,7 +87,7 @@ def update_palavra(_oid):
             return dict(error="ID inexistente"), 404
         else:
             _profile = _usuarios.find_by_username(identity)
-            if(_check['user'] == identity or _profile.get('permission') == 0): 
+            if(_check['user'] == identity or _profile.get('permission') == 3): 
                 del _check['_id']
                 del _check['user']
                 for key in _palavras.fields.keys():
@@ -109,7 +109,7 @@ def delete_palavra(_oid):
             return dict(error="ID inexistente"), 404
         else:
             _profile = _usuarios.find_by_username(identity)
-            if(_check['user'] == identity or _profile.get('permission') == 0): 
+            if(_check['user'] == identity or _profile.get('permission') == 3): 
                 _palavras.delete(_oid)
                 return dict(message="Deletada", _id=_oid), 204
             else:

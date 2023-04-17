@@ -3,6 +3,7 @@
 from flask import request, jsonify, Blueprint
 from models import usuarios  # call model file
 from werkzeug.security import generate_password_hash, check_password_hash
+from utils import helpers
 
 from flask_jwt_extended import get_jwt, create_access_token, get_jwt_identity, jwt_required, create_refresh_token
 
@@ -21,6 +22,11 @@ def create_user():
         if _check:
             return jsonify(error="Email ou usuário em uso"), 409
         else:
+            if not helpers.check_email(email):
+                print(helpers.check_email(email))
+                return jsonify(error="Email inválido"), 400  
+            if not helpers.check_username(username):
+                return jsonify(error="Nome de usuário inválido"), 400
             _usuarios.create({
                 "username":username,
                 "email":email,

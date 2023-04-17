@@ -3,11 +3,11 @@ services:
   backend:
     build: ./backend
     # HTTP
-    command: gunicorn --workers 4 --bind 0.0.0.0:80 --chdir /home/backend/project/ wsgi:app
+    # command: gunicorn --workers 4 --bind 0.0.0.0:80 --chdir /home/backend/project/ wsgi:app
     # HTTPS
     # command: gunicorn --workers 4 --certfile=/home/backend/project/certificates/domain.cert.pem --keyfile=/home/backend/project/certificates/private.key.pem --bind 0.0.0.0:443 --chdir /home/backend/project/ wsgi:app
     # Development
-    # command: gunicorn -w 3 -b 0.0.0.0:8080 waiwaitapota:wsgi --reload
+    command: gunicorn -b 0.0.0.0:8080 --chdir /home/backend/project/ wsgi:app --reload
     environment:
       PORT_APP: 
       DB_URL: mongodb://mongo
@@ -32,6 +32,7 @@ services:
     ports:
       - 80:80
       - 443:443
+      - 5000:8080
     volumes:
       - ./backend:/home/backend/project
     depends_on:

@@ -19,7 +19,7 @@ def list_usuarios(_oid=None):
     identity = get_jwt_identity()
     args = request.args
     _check_permission = _usuarios.find_by_username(identity)
-    if _check_permission['permission'] != 0:
+    if _check_permission['permission'] != 3:
         return "", 401
     else:
         if _oid:
@@ -52,28 +52,20 @@ def update_usuario(_oid):
     identity = get_jwt_identity()
     _check_permission = _usuarios.find_by_username(identity)
     _role = _check_permission.get('permission')
-    if _check_permission['permission'] != 0:
+    if _check_permission['permission'] != 3:
         return "", 401
     if request.method == "PUT":
         _check = _usuarios.find_by_id(_oid)
         if not _check:
             return dict(error="ID inexistente"), 404
         else:
-            if(_check['username'] == identity or _role == 0):
+            if(_check['username'] == identity or _role == 3):
                 del _check['_id']
                 for key in _usuarios.fields.keys():
                     if key in request.json:
                         if key == "password":
                             _check[key] = generate_password_hash(request.json[key])
-                        if key == "permission":
-                            if _role == 0:
-                                _check[key] = request.json[key]
-                        if key == "username" or key == "email":
-                            if _check[key] != request.json[key]:
-                                _check = _usuarios.find_by_username_or_email(request.json[key], request.json[key])
-                                if _check:
-                                    return jsonify(error="Email ou usuário em uso"), 409
-                        else: 
+                        if key == "permission" and _role == 3:
                             _check[key] = request.json[key]
                 response = _usuarios.update(_oid, _check)
                 return response, 204
@@ -91,7 +83,7 @@ def delete_usuario(_oid):
             return dict(error="ID inexistente"), 404
         else:
             _profile = _usuarios.find_by_username(identity)
-            if(_profile.get('permission') == 0): 
+            if(_profile.get('permission') == 3): 
                 _usuarios.delete(_oid)
                 return dict(message="Deletado", _id=_oid), 204
             else:

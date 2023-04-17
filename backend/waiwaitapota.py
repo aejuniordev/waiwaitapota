@@ -14,6 +14,7 @@ from routes.usuarios import usuario
 from routes.auth import auth 
 from routes.uploads import uploads
 
+from starting_cfg import create_starting
 
 from config import config
 import redis
@@ -57,7 +58,6 @@ def logout():
     jwt_redis_blocklist.set(jti, '')
     return jsonify(msg="Access token revoked")
 
-
 @app.route('/', methods=['GET'])
 def hello():
     return {"hello": "world"}, 200
@@ -71,8 +71,7 @@ app.register_blueprint(usuario, url_prefix='/usuarios')
 app.register_blueprint(auth, url_prefix='/auth')
 app.register_blueprint(uploads, url_prefix='/uploads')
 
-
-# if __name__ == "__main__":
-#     create_starting()
-#     port = int(os.environ.get('PORT', 5000))
-#     app.run(debug=True, host='0.0.0.0', port=port, use_reloader=True )
+@app.before_first_request
+def create_user():
+    print("teste")
+    create_starting()

@@ -23,9 +23,9 @@ class Usuario(object):
         ]
 
         # Fields optional for CREATE
-        # 0 - admin
-        # 1 - user
-        # 2 - guest
+        # 3 - admin
+        # 2 - user
+        # 1 - guest
         # Only admin can create admin
         self.create_optional_fields = [
             "permission"
@@ -50,7 +50,7 @@ class Usuario(object):
         # Validator will throw error if invalid
         self.validator.validate(user, self.fields, self.create_required_fields, self.create_optional_fields)
         # Set default permission to guest
-        user['permission'] = 2
+        user['permission'] = 1
         res = self.db.insert(user, self.collection_name)
         return dict(_id=res)
     
