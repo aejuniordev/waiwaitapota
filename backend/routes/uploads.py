@@ -22,13 +22,8 @@ def create_upload():
             if not _check:
                 return dict(error="Palavra inexistente! Insira um ID válido."), 404
             else:
-                print("dono da palavra",_check['user'])
-                print("usuario logado",identity)
                 _profile = _usuarios.find_by_username(identity)
-                print(_profile)
-                if _check['user'] != identity or _profile.get('permission') != 3:
-                    return dict(error="Palavra não pertence ao usuário!"), 401
-                else:
+                if _check['user'] == identity or _profile.get('permission') == 3:
                     file = request.files["file"]
                     content_type, _ = guess_type(file.filename)
                     if content_type is None:
@@ -48,6 +43,9 @@ def create_upload():
                             return dict(filename=str(_oid)), 201
                         else:
                             return dict(error="Tipo de arquivo não suportado!"), 400
+                else:
+                   return dict(error="Palavra não pertence ao usuário!"), 401
+                
         else:
             return dict(error="Informe o ID da palavra!"), 400
 
