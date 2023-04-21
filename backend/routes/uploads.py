@@ -44,6 +44,9 @@ def create_upload():
                         else:
                             return dict(error="Tipo de arquivo não suportado!"), 400
                 else:
+                   print(_profile.get('permission') == 3)
+                   print(_profile)
+                   print(_profile.get('permission'))
                    return dict(error="Palavra não pertence ao usuário!"), 401
                 
         else:
