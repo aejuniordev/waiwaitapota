@@ -66,7 +66,7 @@ def update_usuario(_oid):
                         if key == "password":
                             _check[key] = generate_password_hash(request.json[key])
                         if key == "permission" and _role == 3:
-                            _check[key] = request.json[key]
+                            _check[key] = int(request.json[key])
                 response = _usuarios.update(_oid, _check)
                 return response, 204
             else:

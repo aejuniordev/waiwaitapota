@@ -16,7 +16,7 @@ _usuarios = usuarios.Usuario()
 
 @palavra.route('/', methods=['GET'])
 @palavra.route('/<string:_oid>', methods=['GET'])
-@jwt_required()
+# @jwt_required()
 #Busca a palavras pelo ID
 def list_palavras(_oid=None):
     args = request.args
