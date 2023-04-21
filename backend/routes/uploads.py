@@ -44,9 +44,6 @@ def create_upload():
                         else:
                             return dict(error="Tipo de arquivo não suportado!"), 400
                 else:
-                   print(_profile.get('permission') == 3)
-                   print(_profile)
-                   print(_profile.get('permission'))
                    return dict(error="Palavra não pertence ao usuário!"), 401
                 
         else:
@@ -59,11 +56,11 @@ def delete_upload(filename=None):
     identity = get_jwt_identity()
     _check = gridfs.find_by_id(filename, "fs.files")
     _profile = _usuarios.find_by_username(identity)
-    if _check['user'] != identity or _profile.get('permission') != 3:
-        return dict(error="Upload não pertence ao usuário!"), 401
-    else:
+    if _check['user'] == identity or _profile.get('permission') == 3:
         gridfs.delete_file(filename)
         return "", 202
+    else:
+        return dict(error="Upload não pertence ao usuário!"), 401
     
 
 # Todo: Para consultar imagens necessário autenticação
