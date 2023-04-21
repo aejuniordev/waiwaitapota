@@ -9,12 +9,9 @@ _palavras = palavras.Palavra()
 _uploads = upload.Upload()
 _usuarios = usuarios.Usuario()
 
-# TODO: Refatorar para middleware de permissão
-
 @usuario.route('/', methods=['GET'])
 @usuario.route('/<string:_oid>', methods=['GET'])
 @jwt_required()
-#Busca a palavras pelo ID
 def list_usuarios(_oid=None):
     identity = get_jwt_identity()
     args = request.args
@@ -45,7 +42,6 @@ def list_usuarios(_oid=None):
                 return dict(data=_result, total=_total), 200
             else: return "", 400
 
-# TODO: Check if username or email exists before create
 @usuario.route('/<string:_oid>', methods=['PUT'])
 @jwt_required()
 def update_usuario(_oid):
@@ -72,7 +68,6 @@ def update_usuario(_oid):
             else:
                 return dict(error="Palavra não pertence ao usuário"), 401
 
-# Todo: Checar se a palavra pertence ao usuário logado ✔️
 @usuario.route('/<string:_oid>', methods=['DELETE'])
 @jwt_required()
 def delete_usuario(_oid):
