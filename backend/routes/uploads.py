@@ -11,9 +11,6 @@ _uploads = upload.Upload()
 _usuarios = usuarios.Usuario()
 
 
-# Todo: Verificar token do usuário logado para postar a imagem e anexar email do token ✔️
-# Todo: Checar se tipo de arquivo já está vinculado ao ID da palavra ✔️
-# Todo: Verificar se oidword é válido para criar no BD ✔️
 @uploads.route('/', methods=['POST'])
 @jwt_required()
 def create_upload():
@@ -25,6 +22,9 @@ def create_upload():
             if not _check:
                 return dict(error="Palavra inexistente! Insira um ID válido."), 404
             else:
+                print("dono da palavra",_check['user'])
+                print("usuario logado",identity)
+                print(_profile)
                 _profile = _usuarios.find_by_username(identity)
                 if _check['user'] != identity or _profile.get('permission') != 3:
                     return dict(error="Palavra não pertence ao usuário!"), 401
