@@ -24,8 +24,8 @@ def create_upload():
             else:
                 print("dono da palavra",_check['user'])
                 print("usuario logado",identity)
-                print(_profile)
                 _profile = _usuarios.find_by_username(identity)
+                print(_profile)
                 if _check['user'] != identity or _profile.get('permission') != 3:
                     return dict(error="Palavra não pertence ao usuário!"), 401
                 else:
